@@ -245,7 +245,7 @@
                     return;
                 }
 
-                const mapsUrl = `https://www.google.com/maps?q=${latitude},${longitude}`;
+                const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`;
                 const message = `CLIENTE: ${name.toUpperCase()}\n\nREFERÊNCIA: ${ref.toUpperCase()}\n\n\n${mapsUrl}`;
                 
                 window.location.href = `whatsapp://send?text=${encodeURIComponent(message)}`;
