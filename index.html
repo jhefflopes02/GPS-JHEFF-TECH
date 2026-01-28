@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>JHEFF TECH</title>
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+    <link rel="apple-touch-icon" href="icon.png">
+    <link rel="icon" type="image/png" href="icon.png">
+    
+    <link rel="manifest" href='data:application/manifest+json;base64,ewogICJuYW1lIjogIkpIRUZGIFRFQ0giLAogICJzaG9ydF9uYW1lIjogIkpUIEdQUyIsCiAgInN0YXJ0X3VybCI6ICIuL2luZGV4Lmh0bWwiLAogICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLAogICJiYWNrZ3JvdW5kX2NvbG9yIjogIiMwMDAwMDAiLAogICJ0aGVtZV9jb2xvciI6ICIjMDAwMDAwIiwKICAiaWNvbnMiOiBbCiAgICB7CiAgICAgICJzcmMiOiAiaWNvbi5wbmciLAogICAgICAic2l6ZXMiOiAiNTEyeDUxMiIsCiAgICAgICJ0eXBlIjogImltYWdlL3BuZyIsCiAgICAgICJwdXJwb3NlIjogImFueSBtYXNrYWJsZSIKICAgIH0KICBdCn0='>
+
+    <style>
+        :root {
+            --primary: #007AFF;
+            --background: #000000;
+            --card: #1C1C1E;
+            --text: #FFFFFF;
+            --border: #38383A;
+            --danger: #FF3B30;
+            --disabled: #2C2C2E;
+        }
+
+        html, body {
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+            background-color: var(--background);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 400px;
+            padding: 30px 24px;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            box-sizing: border-box;
+        }
+
+        .header {
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .title {
+            font-size: 38px;
+            font-weight: bold;
+            margin: 0;
+            letter-spacing: -1px;
+            text-transform: uppercase;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            opacity: 0.6;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .label {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: block;
+            color: #8E8E93;
+            text-transform: uppercase;
+        }
+
+        input, textarea {
+            width: 100%;
+            background-color: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 14px;
+            color: white;
+            font-size: 16px;
+            box-sizing: border-box;
+            outline: none;
+            font-family: inherit;
+        }
+
+        textarea {
+            height: 90px;
+            resize: none;
+        }
+
+        .btn-gerar {
+            width: 100%;
+            height: 58px;
+            border-radius: 12px;
+            border: none;
+            background-color: var(--primary);
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        .btn-gerar:disabled {
+            background-color: var(--disabled);
+            color: #48484A;
+        }
+
+        .developer-info {
+            text-align: center;
+            margin-top: 25px;
+            font-size: 11px;
+            color: #FFFFFF;
+            opacity: 0.3;
+            line-height: 1.4;
+        }
+
+        .footer {
+            margin-top: auto;
+            padding-bottom: 10px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .btn-sair {
+            background-color: var(--danger);
+            color: white;
+            border: none;
+            padding: 10px 45px;
+            border-radius: 25px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .spinner {
+            width: 22px;
+            height: 22px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1 class="title">JT GPS</h1>
+        <p class="subtitle">gerar links</p>
+    </div>
+
+    <div class="main-content">
+        <div class="input-group">
+            <label class="label">CLIENTE:</label>
+            <input type="text" id="clientName" placeholder="Nome do cliente">
+        </div>
+
+        <div class="input-group">
+            <label class="label">REFERÊNCIA:</label>
+            <textarea id="reference" placeholder="Digite a referência..."></textarea>
+        </div>
+
+        <button id="btnGerar" class="btn-gerar" onclick="gerarLocalizacao()">
+            <span id="btnText">GERAR</span>
+        </button>
+
+        <div class="developer-info">
+            Desenvolvido por:<br>
+            <strong>Jheff Lopes</strong>
+        </div>
+    </div>
+
+    <div class="footer">
+        <button class="btn-sair" onclick="exitApp()">SAIR</button>
+    </div>
+</div>
+
+<script>
+    // Registro do Service Worker para funcionar Offline
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./sw.js');
+    }
+
+    let loading = false;
+
+    async function gerarLocalizacao() {
+        const nameField = document.getElementById('clientName');
+        const refField = document.getElementById('reference');
+        const name = nameField.value.trim();
+        const ref = refField.value.trim();
+        const btn = document.getElementById('btnGerar');
+        const btnText = document.getElementById('btnText');
+
+        if (!name) {
+            alert('Por favor, preencha o nome do cliente.');
+            return;
+        }
+
+        loading = true;
+        btn.disabled = true;
+        btnText.innerHTML = '<div class="spinner"></div>';
+
+        const timer = setTimeout(() => {
+            if (loading) {
+                loading = false;
+                btn.disabled = false;
+                btnText.innerText = 'GERAR';
+                alert('Sinal Fraco: O GPS demorou muito.');
+            }
+        }, 20000);
+
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                clearTimeout(timer);
+                const { latitude, longitude, accuracy } = position.coords;
+
+                if (accuracy > 12) {
+                    alert('Sinal Fraco: Precisão insuficiente (' + Math.round(accuracy) + 'm).');
+                    loading = false;
+                    btn.disabled = false;
+                    btnText.innerText = 'GERAR';
+                    return;
+                }
+
+                const mapsUrl = `http://googleusercontent.com/maps.google.com/${latitude},${longitude}`;
+                const message = `CLIENTE: ${name.toUpperCase()}\n\nREFERÊNCIA: ${ref.toUpperCase()}\n\n\n${mapsUrl}`;
+                
+                window.location.href = `whatsapp://send?text=${encodeURIComponent(message)}`;
+
+                nameField.value = '';
+                refField.value = '';
+                loading = false;
+                btn.disabled = false;
+                btnText.innerText = 'GERAR';
+            },
+            () => {
+                clearTimeout(timer);
+                loading = false;
+                btn.disabled = false;
+                btnText.innerText = 'GERAR';
+                alert('Erro de GPS: Ative a localização.');
+            },
+            { enableHighAccuracy: true, timeout: 20000 }
+        );
+    }
+
+    function exitApp() {
+        window.close();
+        setTimeout(() => {
+            window.location.href = "about:blank";
+        }, 100);
+    }
+</script>
+
+</body>
+</html>
