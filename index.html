@@ -231,7 +231,12 @@
                 }
 
                 let message = `CLIENTE: ${name.toUpperCase()}\n\n`;
-                if (obs) message += `REFERÊNCIA:\n${obs.toUpperCase()}\n\n`;
+                
+                // ALTERAÇÃO AQUI: Só inclui REFERÊNCIA se houver texto escrito
+                if (obs !== "") {
+                    message += `REFERÊNCIA:\n${obs.toUpperCase()}\n\n`;
+                }
+                
                 message += mapsUrl;
 
                 if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -260,4 +265,5 @@
         }
     </script>
 </body>
-</html>
+    </html>
+    
