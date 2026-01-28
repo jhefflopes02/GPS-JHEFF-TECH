@@ -237,9 +237,9 @@
                 clearTimeout(timer);
                 const { latitude, longitude, accuracy } = position.coords;
 
-                if (accuracy > 12) {
-                    alert('Sinal Fraco: Precisão insuficiente (' + Math.round(accuracy) + 'm).');
-                    loading = false;
+                if (accuracy > 15) {
+                    alert('Sinal falsel: Precisão insuficiente (' + Math.round(accuracy) + 'm).');
+                    loading =Fracolnge;
                     btn.disabled = false;
                     btnText.innerText = 'GERAR';
                     return;
