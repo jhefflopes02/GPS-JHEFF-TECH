@@ -11,7 +11,7 @@
     <link rel="apple-touch-icon" href="icon.png">
     <link rel="icon" type="image/png" href="icon.png">
     
-    <link rel="manifest" href='data:application/manifest+json;base64,ewogICJuYW1lIjogIkpIRUZGIFRFQ0giLAogICJzaG9ydF9uYW1lIjogIkpUIEdQUyIsCiAgInN0YXJ0X3VybCI6ICIuL2luZGV4Lmh0bWwiLAogICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLAogICJiYWNrZ3JvdW5kX2NvbG9yIjogIiMwMDAwMDAiLAogICJ0aGVtZV9jb2xvciI6ICIjMDAwMDAwIiwKICAiaWNvbnMiOiBbCiAgICB7CiAgICAgICJzcmMiOiAiaWNvbi5wbmciLAogICAgICAic2l6ZXMiOiAiNTEyeDUxMiIsCiAgICAgICJ0eXBlIjogImltYWdlL3BuZyIsCiAgICAgICJwdXJwb3NlIjogImFueSBtYXNrYWJsZSIKICAgIH0KICBdCn0='>
+    <link rel="manifest" href="manifest.json">
 
     <style>
         :root {
@@ -224,51 +224,72 @@
 
         const timer = setTimeout(() => {
             if (loading) {
-                loading = false;
-                btn.disabled = false;
-                btnText.innerText = 'GERAR';
-                alert('Sinal Fraco: O GPS demorou muito para captar o satélite.');
+                // Deixei o texto girando, pois o GPS ainda pode retornar no fim do watch
             }
-        }, 25000);
+        }, 15000); // Timer visual de 15s
 
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-                clearTimeout(timer);
-                const { latitude, longitude, accuracy } = position.coords;
+        // LÓGICA DE GPS DO IPHONE (15 SEGUNDOS COM WATCHPOSITION)
+        const gpsPromise = new Promise((resolve, reject) => {
+            let watchId = null;
+            const startTime = Date.now();
 
-                if (accuracy > 25) {
-                    alert('Sinal Fraco: Precisão atual de ' + Math.round(accuracy) + 'm. Vá para um local aberto e tente novamente.');
-                    loading = false;
-                    btn.disabled = false;
-                    btnText.innerText = 'GERAR';
-                    return;
-                }
+            const stopGPS = () => { if (watchId !== null) navigator.geolocation.clearWatch(watchId); };
 
-                // Links mantidos conforme seu padrão, apenas corrigindo a sintaxe das variáveis ${}
-                const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`;
-                const message = `CLIENTE: ${name.toUpperCase()}\n\nREFERÊNCIA: ${ref.toUpperCase()}\n\n\n${mapsUrl}`;
-                
-                window.location.href = `whatsapp://send?text=${encodeURIComponent(message)}`;
+            watchId = navigator.geolocation.watchPosition(
+                (position) => {
+                    const acc = position.coords.accuracy;
+                    // Se a precisão for boa (<= 20m), aceita na hora
+                    if (acc <= 20) {
+                        stopGPS();
+                        resolve(position);
+                    }
+                    // Se passar 15 segundos, aceita o que tiver
+                    if (Date.now() - startTime > 15000) {
+                        stopGPS();
+                        resolve(position);
+                    }
+                },
+                (error) => {
+                    if (Date.now() - startTime > 15000) {
+                        stopGPS();
+                        reject(error);
+                    }
+                },
+                { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+            );
+        });
 
-                nameField.value = '';
-                refField.value = '';
+        try {
+            const position = await gpsPromise;
+            const { latitude, longitude, accuracy } = position.coords;
+
+            // Alerta se a precisão final ficou ruim
+            if (accuracy > 40) {
+                alert('Sinal Fraco: Precisão de ' + Math.round(accuracy) + 'm. Vá para um local aberto.');
                 loading = false;
                 btn.disabled = false;
                 btnText.innerText = 'GERAR';
-            },
-            () => {
-                clearTimeout(timer);
-                loading = false;
-                btn.disabled = false;
-                btnText.innerText = 'GERAR';
-                alert('Erro ao obter localização.');
-            },
-            { 
-                enableHighAccuracy: true, 
-                timeout: 25000, 
-                maximumAge: 0 
+                return;
             }
-        );
+
+            // CORRIGIDO: Adicionado o $ antes de {latitude} para o link funcionar
+            const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`;
+            const message = `CLIENTE: ${name.toUpperCase()}\n\nREFERÊNCIA: ${ref.toUpperCase()}\n\n\n${mapsUrl}`;
+            
+            window.location.href = `whatsapp://send?text=${encodeURIComponent(message)}`;
+
+            nameField.value = '';
+            refField.value = '';
+            loading = false;
+            btn.disabled = false;
+            btnText.innerText = 'GERAR';
+
+        } catch (error) {
+            loading = false;
+            btn.disabled = false;
+            btnText.innerText = 'GERAR';
+            alert('Erro de GPS: Verifique se a Localização Precisa está ativa.');
+        }
     }
 
     function exitApp() {
