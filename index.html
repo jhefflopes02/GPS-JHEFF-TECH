@@ -199,7 +199,6 @@
 </div>
 
 <script>
-    // Registro do Service Worker para funcionar Offline
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('./sw.js');
     }
@@ -228,23 +227,24 @@
                 loading = false;
                 btn.disabled = false;
                 btnText.innerText = 'GERAR';
-                alert('Sinal Fraco: O GPS demorou muito.');
+                alert('Sinal Fraco: O GPS demorou muito para captar o satélite.');
             }
-        }, 20000);
+        }, 25000);
 
         navigator.geolocation.getCurrentPosition(
             (position) => {
                 clearTimeout(timer);
                 const { latitude, longitude, accuracy } = position.coords;
 
-                if (accuracy > 15) {
-                    alert('Sinal falsel: Precisão insuficiente (' + Math.round(accuracy) + 'm).');
-                    loading =Fracolnge;
+                if (accuracy > 25) {
+                    alert('Sinal Fraco: Precisão atual de ' + Math.round(accuracy) + 'm. Vá para um local aberto e tente novamente.');
+                    loading = false;
                     btn.disabled = false;
                     btnText.innerText = 'GERAR';
                     return;
                 }
 
+                // Links mantidos conforme seu padrão, apenas corrigindo a sintaxe das variáveis ${}
                 const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`;
                 const message = `CLIENTE: ${name.toUpperCase()}\n\nREFERÊNCIA: ${ref.toUpperCase()}\n\n\n${mapsUrl}`;
                 
@@ -261,9 +261,13 @@
                 loading = false;
                 btn.disabled = false;
                 btnText.innerText = 'GERAR';
-                alert('Erro de GPS: Ative a localização.');
+                alert('Erro de GPS: Ative a localização nas configurações do iPhone.');
             },
-            { enableHighAccuracy: true, timeout: 20000 }
+            { 
+                enableHighAccuracy: true, 
+                timeout: 25000, 
+                maximumAge: 0 
+            }
         );
     }
 
